@@ -14,8 +14,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import { DashboardBreadcrumbs } from "../modules/dashboard/SidebarBreadcrun";
-import { AppSidebar } from "../modules/dashboard/appSidebar";
+import { DashboardBreadcrumbs } from "../../modules/dashboard/SidebarBreadcrun";
+import { AppSidebar } from "../../modules/dashboard/appSidebar";
 
 export default function MainLayout({
   children,
@@ -72,7 +72,7 @@ export default function MainLayout({
               <Separator orientation="vertical" className="mx-4 h-full" />
               <DashboardBreadcrumbs />
             </header>
-            <main className="flex-1 overflow-auto p-4 md:p-6">{children}</main>
+            <main className="flex-1 overflow-auto">{children}</main>
           </SidebarInset>
         </SidebarProvider>
       </Authenticated>
