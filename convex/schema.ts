@@ -56,7 +56,7 @@ export default defineSchema({
     status: v.union(
       v.literal("completed"),
       v.literal("failed"),
-      v.literal("pending")
+      v.literal("pending"),
     ),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -85,14 +85,37 @@ export default defineSchema({
           type: v.union(
             v.literal("casual"),
             v.literal("part-time"),
-            v.literal("serious")
+            v.literal("serious"),
           ),
-        })
-      )
+        }),
+      ),
     ),
     // Project owner (creator)
     ownerId: v.id("users"),
     about: v.optional(v.string()),
+    // new details for the project to maintain community engaement
+    projectStars: v.optional(v.number()), // this is for project , on wekraft platform
+    projectForks: v.optional(v.number()), // this fork currently dont include github forks ,only wekraft forks.
+    projectUpvotes: v.optional(v.number()),
+    // HEATH SCORES SUPER IMPORTANT ----------------
+    healthScore: v.optional(
+      v.object({
+        totalScore: v.number(), // 0–100
+        activityMomentum: v.number(), // 0–35
+        maintenanceQuality: v.number(), // 0–35
+        communityTrust: v.number(), // 0–20
+        freshness: v.number(), // 0–10
+        lastCalculatedDate: v.string(), // YYYY-MM-DD
+        // Stores last 2 health scores only
+        previousScores: v.array(
+          v.object({
+            totalScore: v.number(), // 0–100
+            calculatedDate: v.string(), // YYYY-MM-DD
+          }),
+        ),
+      }),
+    ),
+    // TIME STAMPS----
     createdAt: v.number(),
     updatedAt: v.number(),
   })

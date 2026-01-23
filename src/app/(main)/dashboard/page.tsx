@@ -88,6 +88,7 @@ const DashboardPage = () => {
   //   totalReviews: 50,
   //   accountAgeInYears: 3,
   // };
+  
 
   const [activeTab, setActiveTab] = useState("stats");
 
@@ -500,6 +501,6 @@ const DashboardPage = () => {
 
 export default DashboardPage;
 
-// <SignOutButton>
-//   <Button variant="outline">Sign Out</Button>
-// </SignOutButton>
+{/* <SignOutButton>
+  <Button variant="outline">Sign Out</Button>
+</SignOutButton> */}

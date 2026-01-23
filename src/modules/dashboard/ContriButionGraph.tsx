@@ -62,15 +62,16 @@ const ContributionGraph = () => {
         >
           <ActivityCalendar
             data={data?.contributions}
-            // theme={{
-            //   dark: ["#919191", "#1e3a8a", "#1d4ed8", "#2563eb", "#3b82f6"],
-            // }}
+            theme={{
+              light: ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"],
+              dark: ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"],
+            }}
             colorScheme={theme === "dark" ? "dark" : "light"}
             blockSize={12}
             blockMargin={5}
             fontSize={14}
             // showWeekdayLabels
-            showColorLegend
+            showColorLegend={false}
             showTotalCount
             showMonthLabels
           />

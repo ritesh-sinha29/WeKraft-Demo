@@ -11,10 +11,11 @@ const HeaderProfile = () => {
   );
   return (
     <div>
-      <Avatar className="h-11 w-11">
+      <Avatar className="h-10 w-10">
         <AvatarImage src={user?.imageUrl} />
         <AvatarFallback>UN</AvatarFallback>
       </Avatar>
+      
     </div>
   );
 };
