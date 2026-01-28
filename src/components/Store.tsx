@@ -7,7 +7,7 @@
 //               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-4 mb-5">
 //                 {/* /PROJECT NAME ONLY */}
 //                 <div className="space-y-2">
-//                   <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-foreground to-foreground/50 truncate max-w-[450px]">
+//                   <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/50 truncate max-w-[450px]">
 //                     {project.projectName}
 //                   </h1>
 //                 </div>
@@ -35,14 +35,14 @@
 //                 <Link
 //                   href={`/dashboard/my-projects/${project._id}/action/codebase-copilot`}
 //                 >
-//                   <Card className="bg-linear-to-br from-blue-500/30 via-indigo-500/5 to-transparent py-3 scale-95 hover:scale-100 transition-all duration-300 cursor-pointer">
+//                   <Card className="bg-gradient-to-br from-blue-500/30 via-indigo-500/5 to-transparent py-3 scale-95 hover:scale-100 transition-all duration-300 cursor-pointer">
 //                     <CardHeader>
 //                       <CardTitle className="flex items-center justify-between ">
 //                         <p>
 //                           <LucideBrain className="w-4 h-4 inline mr-2" />
 //                           Codebase Copilot
 //                         </p>
-//                         <div className="py-1 px-3 text-xs text-blue-600 dark:text-white bg-linear-to-br from-blue-300 to-indigo-400/30 rounded-full w-fit">
+//                         <div className="py-1 px-3 text-xs text-blue-600 dark:text-white bg-gradient-to-br from-blue-300 to-indigo-400/30 rounded-full w-fit">
 //                           PRO
 //                         </div>
 //                       </CardTitle>
@@ -74,14 +74,14 @@
 //                 <Link
 //                   href={`/dashboard/my-projects/${project._id}/action/data-model-visualizer`}
 //                 >
-//                   <Card className="bg-linear-to-br from-blue-500/30 via-indigo-500/5 to-transparent py-3 scale-95 hover:scale-100 transition-all duration-300 cursor-pointer">
+//                   <Card className="bg-gradient-to-br from-blue-500/30 via-indigo-500/5 to-transparent py-3 scale-95 hover:scale-100 transition-all duration-300 cursor-pointer">
 //                     <CardHeader>
 //                       <CardTitle className="flex items-center justify-between ">
 //                         <p>
 //                           <LucideBrain className="w-4 h-4 inline mr-2" />
 //                           Data Model Visualizer
 //                         </p>
-//                         <div className="py-1 px-3 text-xs text-blue-600 dark:text-white bg-linear-to-br from-blue-300 to-indigo-400/30 rounded-full w-fit">
+//                         <div className="py-1 px-3 text-xs text-blue-600 dark:text-white bg-gradient-to-br from-blue-300 to-indigo-400/30 rounded-full w-fit">
 //                           PRO
 //                         </div>
 //                       </CardTitle>
@@ -110,14 +110,14 @@
 //                 <Link
 //                   href={`/dashboard/my-projects/${project._id}/action/architecture-explorer`}
 //                 >
-//                   <Card className="bg-linear-to-br from-blue-500/30 via-indigo-500/5 to-transparent py-3 scale-95 hover:scale-100 transition-all duration-300 cursor-pointer">
+//                   <Card className="bg-gradient-to-br from-blue-500/30 via-indigo-500/5 to-transparent py-3 scale-95 hover:scale-100 transition-all duration-300 cursor-pointer">
 //                     <CardHeader>
 //                       <CardTitle className="flex items-center justify-between ">
 //                         <p>
 //                           <LucideBrain className="w-4 h-4 inline mr-2" />
 //                           Architecture Explorer
 //                         </p>
-//                         <div className="py-1 px-3 text-xs text-blue-600 dark:text-white bg-linear-to-br from-blue-300 to-indigo-400/30 rounded-full w-fit">
+//                         <div className="py-1 px-3 text-xs text-blue-600 dark:text-white bg-gradient-to-br from-blue-300 to-indigo-400/30 rounded-full w-fit">
 //                           PRO
 //                         </div>
 //                       </CardTitle>

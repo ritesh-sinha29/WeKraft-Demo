@@ -230,7 +230,7 @@ export function MultiStepOnboarding() {
       </div>
 
       {/* BODY  */}
-      <div className="w-full max-w-xl  bg-linear-to-b from-white/30 to-transparent rounded-2xl overflow-hidden font-sans">
+      <div className="w-full max-w-xl  bg-gradient-to-b from-white/30 to-transparent rounded-2xl overflow-hidden font-sans">
         <div className="p-8 ">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div

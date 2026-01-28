@@ -100,7 +100,7 @@ const DashboardPage = () => {
       <div className="px-4 flex items-center gap-8">
         <h1 className="text-3xl font-semibold ">Welcome {user?.name}</h1>
 
-        {/* <div className="w-10 h-10 bg-linear-to-br from-blue-600/10 via-indigo-400/30 to-white/30 flex items-center justify-center rounded-full shadow-md shadow-blue-600 hover:scale-105 hover:-translate-y-1 transition-all duration-300">
+        {/* <div className="w-10 h-10 bg-gradient-to-br from-blue-600/10 via-indigo-400/30 to-white/30 flex items-center justify-center rounded-full shadow-md shadow-blue-600 hover:scale-105 hover:-translate-y-1 transition-all duration-300">
           <BsStars className="h-6 w-6 animate-pulse duration-500" />{" "}
         </div> */}
       </div>
@@ -109,7 +109,7 @@ const DashboardPage = () => {
       {/* ========================= */}
       <div className="grid grid-cols-3 gap-10 w-full my-5 px-8">
         {/* COMMIT */}
-        <Card className="bg-linear-to-br from-accent/90 to-transparent dark:to-black  min-w-[260px]">
+        <Card className="bg-gradient-to-br from-accent/90 to-transparent dark:to-black  min-w-[260px]">
           <CardHeader>
             <CardTitle>Commits</CardTitle>
           </CardHeader>
@@ -127,7 +127,7 @@ const DashboardPage = () => {
           </CardContent>
         </Card>
         {/* TOTAL PR*/}
-        <Card className="bg-linear-to-br from-accent/90 to-transparent dark:to-black  min-w-[260px]">
+        <Card className="bg-gradient-to-br from-accent/90 to-transparent dark:to-black  min-w-[260px]">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <p>Pull Requests</p>
@@ -153,7 +153,7 @@ const DashboardPage = () => {
           </CardContent>
         </Card>
         {/* DEMO FAKE DATA IDK */}
-        <Card className="relative  min-w-[260px] bg-linear-to-br from-blue-600/60 via-indigo-500/30 to-transparent">
+        <Card className="relative  min-w-[260px] bg-gradient-to-br from-blue-600/60 via-indigo-500/30 to-transparent">
           <CardHeader>
             <CardTitle>Demo Fake Data </CardTitle>
           </CardHeader>
@@ -217,7 +217,7 @@ const DashboardPage = () => {
               )}
             >
               {/* LEFT */}
-              <Card className="p-4 bg-linear-to-b from-accent/40 to-transparent dark:to-black">
+              <Card className="p-4 bg-gradient-to-b from-accent/40 to-transparent dark:to-black">
                 <CardContent className="pt-6">
                   <ContributionGraph />
                 </CardContent>
@@ -226,7 +226,7 @@ const DashboardPage = () => {
               {/* RIGHT */}
               <div className="w-full">
                 {dashboardStats ? (
-                  <Card className="p-2 bg-linear-to-b from-accent/40 to-transparent dark:to-black">
+                  <Card className="p-2 bg-gradient-to-b from-accent/40 to-transparent dark:to-black">
                     {/* <CardHeader></CardHeader> */}
                     <CardContent>
                       <PieChartVariant1 stats={dashboardStats} />
@@ -255,7 +255,7 @@ const DashboardPage = () => {
             >
               {/* LEFT SIDE 6 MONTHS ACTIVITY */}
               <div className="">
-                <Card className="bg-linear-to-b from-accent/40 to-transparent dark:to-black">
+                <Card className="bg-gradient-to-b from-accent/40 to-transparent dark:to-black">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <div className="space-y-1">
                       <CardTitle className="text-base">
@@ -474,7 +474,7 @@ const DashboardPage = () => {
                 </Card>
               </div>
               {/* RIGHT SIDE NOTIFICATIONS */}
-              <div className="w-full bg-linear-to-b from-accent/40 to-transparent dark:to-black p-4 rounded-xl">
+              <div className="w-full bg-gradient-to-b from-accent/40 to-transparent dark:to-black p-4 rounded-xl">
                 <h2>Notifications</h2>
               </div>
             </div>

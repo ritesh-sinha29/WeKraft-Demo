@@ -139,7 +139,7 @@ const StatsTab = ({
   return (
     <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Health Data Section */}
-      <Card className="bg-linear-to-br from-accent/70 dark:to-black to-transparent">
+      <Card className="bg-gradient-to-br from-accent/70 dark:to-black to-transparent">
         <CardHeader>
           <CardTitle>Project Health</CardTitle>
           <div className="text-muted-foreground text-sm flex justify-between">
@@ -209,7 +209,7 @@ const StatsTab = ({
       </Card>
 
       {/* Languages Data */}
-      <Card className="bg-linear-to-br from-accent/70 dark:to-black to-transparent">
+      <Card className="bg-gradient-to-br from-accent/70 dark:to-black to-transparent">
         <CardHeader>
           <CardTitle>Project Languages</CardTitle>
           <CardDescription className="text-muted-foreground text-sm">

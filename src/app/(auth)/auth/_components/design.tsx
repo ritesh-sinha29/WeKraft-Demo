@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const CollaborationSlide = () => (
-  <div className="relative px-4 py-5 w-full rounded-lg bg-linear-to-br from-gray-800 to-black backdrop-blur-sm">
+  <div className="relative px-4 py-5 w-full rounded-lg bg-gradient-to-br from-gray-800 to-black backdrop-blur-sm">
     <div className="flex items-center gap-4 mb-4">
       <div className="flex -space-x-2">
         {[
@@ -45,7 +45,7 @@ const CollaborationSlide = () => (
 );
 
 const ActivitySlide = () => (
-  <div className="relative p-4 w-full rounded-lg bg-linear-to-br from-gray-800 to-black backdrop-blur-sm">
+  <div className="relative p-4 w-full rounded-lg bg-gradient-to-br from-gray-800 to-black backdrop-blur-sm">
     {/* Header */}
     <div className="flex items-center justify-between mb-3">
       <span className="text-xs text-neutral-400">GitHub Activity</span>
@@ -100,7 +100,7 @@ const ActivitySlide = () => (
 );
 
 const AutomationSlide = () => (
-  <div className="relative  px-4 py-5 w-full rounded-lg bg-linear-to-br from-gray-800 to-black backdrop-blur-sm">
+  <div className="relative  px-4 py-5 w-full rounded-lg bg-gradient-to-br from-gray-800 to-black backdrop-blur-sm">
     {/* Top row: People + context */}
     <div className="flex items-center gap-4 mb-4">
       <div className="flex -space-x-2">
@@ -204,7 +204,7 @@ export default function DesignCarousel() {
 //         initial={{ opacity: 0, scale: 0.95 }}
 //         animate={{ opacity: 1, scale: 1 }}
 //         transition={{ delay: 0.4 }}
-//         className="relative p-4 rounded-lg  bg-linear-to-br from-gray-800 to-black backdrop-blur-sm group"
+//         className="relative p-4 rounded-lg  bg-gradient-to-br from-gray-800 to-black backdrop-blur-sm group"
 //       >
 //         <div className="flex items-center gap-4 mb-4">
 //           {/* Avatars */}

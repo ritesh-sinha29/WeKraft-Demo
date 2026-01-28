@@ -170,7 +170,7 @@ const MyProjectId = () => {
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-4 mb-5">
                 {/* /PROJECT NAME ONLY */}
                 <div className="space-y-2">
-                  <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-foreground to-foreground/50 truncate max-w-[450px]">
+                  <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/50 truncate max-w-[450px]">
                     {project.projectName}
                   </h1>
                 </div>
@@ -440,7 +440,7 @@ const MyProjectId = () => {
                       </div>
                     )}
                     {/* AI PRO PROMOTION !! */}
-                    <div className="bg-linear-to-br from-blue-500/30 to-transparent p-3 max-w-[300px] mx-auto rounded-md">
+                    <div className="bg-gradient-to-br from-blue-500/30 to-transparent p-3 max-w-[300px] mx-auto rounded-md">
                       <p className="text-sm font-semibold">
                         Get Better Public Visibility. Rank your project on
                         WeKraft

@@ -50,7 +50,7 @@ export default async function LoginPage() {
             <div className="space-y-6">
               <h1 className="text-5xl md:text-[64px] font-semibold  tracking-normal leading-[1.05] font-pop">
                 The Platform for <br />
-                <span className="text-transparent bg-clip-text bg-linear-to-b from-white to-neutral-500  font-sans font-bold">
+                <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-neutral-500  font-sans font-bold">
                   Modern Collaboration.
                 </span>
               </h1>
@@ -84,7 +84,7 @@ export default async function LoginPage() {
               ].map((feature, i) => (
                 <div
                   key={i}
-                  className="flex gap-4 p-3 z-10 rounded-xl border border-white/5 bg-linear-to-br from-gray-950 to-gray-900 transition-colors"
+                  className="flex gap-4 p-3 z-10 rounded-xl border border-white/5 bg-gradient-to-br from-gray-950 to-gray-900 transition-colors"
                 >
                   <feature.icon className="size-5 text-neutral-100 shrink-0 mt-0.5" />
                   <div className="space-y-1">
@@ -103,8 +103,8 @@ export default async function LoginPage() {
           <div className="flex justify-center lg:justify-end ">
             {/* CARD LOGIN */}
             <div className="w-full max-w-[400px] space-y-8">
-              <div className="p-10 rounded-lg  bg-linear-to-b from-black via-black/60  to-transparent   relative group">
-                <div className="absolute -inset-px bg-linear-to-b from-white/10 to-transparent rounded-lg -z-10 group-hover:from-white/20 transition-all duration-500" />
+              <div className="p-10 rounded-lg  bg-gradient-to-b from-black via-black/60  to-transparent   relative group">
+                <div className="absolute -inset-px bg-gradient-to-b from-white/10 to-transparent rounded-lg -z-10 group-hover:from-white/20 transition-all duration-500" />
 
                 <div className="space-y-7 text-center">
                   <div className="flex items-center justify-center">
@@ -160,7 +160,7 @@ export default async function LoginPage() {
               </div>
 
               {/* Bottom Card Footer */}
-              <div className="text-center bg-linear-to-br from-gray-800 to-black w-fit mx-auto py-2 px-4 rounded-full -mb-10">
+              <div className="text-center bg-gradient-to-br from-gray-800 to-black w-fit mx-auto py-2 px-4 rounded-full -mb-10">
                 <p className="text-xs italic hover:underline cursor-pointer">
                   Star WeKraft on GitHub{" "}
                   <LucideGithub className="inline ml-2" size={20} />

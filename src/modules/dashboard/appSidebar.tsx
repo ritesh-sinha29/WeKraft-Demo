@@ -214,7 +214,7 @@ export const AppSidebar = () => {
         pointer-events-none absolute inset-0 -z-10
         opacity-0 transition-opacity
         group-data-[active=true]:opacity-100
-        bg-linear-to-l from-blue-600/80 dark:from-blue-600/50 via-blue-600/10  to-transparent
+        bg-gradient-to-l from-blue-600/80 dark:from-blue-600/50 via-blue-600/10  to-transparent
       "
               />
             </Link>
@@ -238,7 +238,7 @@ export const AppSidebar = () => {
           pointer-events-none absolute inset-0 -z-10
           opacity-0 transition-opacity
           group-data-[active=true]:opacity-100
-          bg-linear-to-l from-blue-600/50 via-transparent  to-transparent
+          bg-gradient-to-l from-blue-600/50 via-transparent  to-transparent
         "
                 />
               </Link>
@@ -261,7 +261,7 @@ export const AppSidebar = () => {
             pointer-events-none absolute inset-0 -z-10
             opacity-0 transition-opacity
             group-data-[active=true]:opacity-100
-             bg-linear-to-l from-blue-600/50 via-transparent  to-transparent
+             bg-gradient-to-l from-blue-600/50 via-transparent  to-transparent
           "
                   />
                 </div>
@@ -456,7 +456,7 @@ export const AppSidebar = () => {
         pointer-events-none absolute inset-0 -z-10
         opacity-0 transition-opacity
         group-data-[active=true]:opacity-100
-        bg-linear-to-l from-blue-600/50 via-transparent  to-transparent
+        bg-gradient-to-l from-blue-600/50 via-transparent  to-transparent
       "
                   />
                 </Link>
@@ -480,7 +480,7 @@ export const AppSidebar = () => {
         pointer-events-none absolute inset-0 -z-10
         opacity-0 transition-opacity
         group-data-[active=true]:opacity-100
-        bg-linear-to-l from-blue-600/50 via-transparent  to-transparent
+        bg-gradient-to-l from-blue-600/50 via-transparent  to-transparent
       "
                   />
                 </Link>
@@ -504,7 +504,7 @@ export const AppSidebar = () => {
         pointer-events-none absolute inset-0 -z-10
         opacity-0 transition-opacity
         group-data-[active=true]:opacity-100
-        bg-linear-to-l from-blue-600/50 via-transparent  to-transparent
+        bg-gradient-to-l from-blue-600/50 via-transparent  to-transparent
       "
                   />
                 </Link>
@@ -530,7 +530,7 @@ export const AppSidebar = () => {
             pointer-events-none absolute inset-0 -z-10
             opacity-0 transition-opacity
             group-data-[active=true]:opacity-100
-            bg-linear-to-l from-blue-600/50 via-transparent to-transparent
+            bg-gradient-to-l from-blue-600/50 via-transparent to-transparent
           "
                       />
                     </button>
@@ -550,7 +550,7 @@ export const AppSidebar = () => {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="border-t px-2 py-2 group-data-[collapsible=icon]:hidden">
-        <div className="rounded-md bg-linear-to-br from-blue-600/30 via-indigo-400/30 to-transparent px-3 py-3 space-y-3 ">
+        <div className="rounded-md bg-gradient-to-br from-blue-600/30 via-indigo-400/30 to-transparent px-3 py-3 space-y-3 ">
           {/* TOP MESSAGE (only if NOT elite) */}
           {user?.type !== "elite" && (
             <div className="flex items-start gap-2">
