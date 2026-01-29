@@ -1,0 +1,1237 @@
+# WeKraft - Developer Collaboration Platform
+
+## Complete Project Documentation
+
+**Version**: 1.0  
+**Project Type**: Developer Collaboration & Project Management Platform  
+**Last Updated**: January 29, 2026
+
+---
+
+## Table of Contents
+
+1. [Project Overview](#project-overview)
+2. [Technology Stack](#technology-stack)
+3. [Architecture](#architecture)
+4. [Database Schema](#database-schema)
+5. [Complete File Structure](#complete-file-structure)
+6. [Features & Functionality](#features--functionality)
+7. [API Endpoints](#api-endpoints)
+8. [Authentication & Authorization](#authentication--authorization)
+9. [Third-Party Integrations](#third-party-integrations)
+10. [Setup & Installation](#setup--installation)
+11. [Environment Variables](#environment-variables)
+12. [Deployment](#deployment)
+
+---
+
+## Project Overview
+
+**WeKraft** is a modern developer collaboration platform that combines GitHub integration, AI-powered code analysis, and project health tracking. It enables developers to:
+
+- Connect and showcase their GitHub repositories
+- Create and manage collaborative projects
+- Get AI-powered code reviews and assistance
+- Track project health scores
+- Discover and collaborate with other developers
+- Manage project documentation with RAG-powered AI chat
+
+### Key Capabilities
+
+- **Project Management**: Create, manage, and showcase development projects
+- **GitHub Integration**: Seamless connection with GitHub repositories
+- **AI-Powered Features**: Code review, chat assistance, and documentation analysis
+- **Health Scoring**: Automated project health metrics calculation
+- **Collaboration Tools**: Team member management and project discovery
+- **Vector Search**: RAG (Retrieval Augmented Generation) for repository code search
+
+---
+
+## Technology Stack
+
+### Frontend
+- **Framework**: Next.js 16.1.1 with App Router (React 19)
+- **Styling**: Tailwind CSS v4 with custom design system
+- **UI Components**: shadcn/ui (Radix UI primitives)
+- **State Management**: Convex React hooks + TanStack Query v5
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+- **Forms**: React Hook Form with Zod validation
+- **Code Highlighting**: Shiki
+- **Markdown**: React Markdown with remark-gfm
+- **Diagrams**: Mermaid, ReactFlow, @xyflow/react
+
+### Backend & Database
+- **Database**: Convex (Real-time serverless database)
+- **Authentication**: Clerk (@clerk/nextjs v6)
+- **Background Jobs**: Inngest v3
+- **File Storage**: AWS S3 (@aws-sdk/client-s3)
+- **Vector Database**: Pinecone (@pinecone-database/pinecone)
+
+### AI & ML
+- **AI SDKs**: 
+  - @ai-sdk/google v3
+  - @ai-sdk/openai v3
+  - @google/generative-ai
+- **LangChain**: @langchain/core, @langchain/openai
+- **AI Elements**: ai-elements for enhanced UI
+
+### Developer Tools
+- **Language**: TypeScript 5
+- **Linting/Formatting**: Biome 2.2.0
+- **Package Manager**: pnpm (with workspaces)
+- **Build Tool**: Next.js Turbopack
+
+### External Services
+- **Version Control**: GitHub (octokit v5)
+- **API Integrations**: GitHub API, Clerk API
+- **Cloud Services**: AWS S3, AWS CloudFront (planned)
+
+---
+
+## Architecture
+
+### High-Level Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Client Layer                              │
+│         Next.js 16 (App Router) + React 19                      │
+│    ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
+│    │   Auth UI    │  │  Dashboard   │  │  Workspace   │       │
+│    │   (Clerk)    │  │     Pages    │  │     IDE      │       │
+│    └──────────────┘  └──────────────┘  └──────────────┘       │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     API & Services Layer                         │
+│    ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌──────────┐  │
+│    │  Convex   │  │   Next.js │  │  Inngest  │  │   AI     │  │
+│    │  Backend  │  │API Routes │  │ Functions │  │Services  │  │
+│    └───────────┘  └───────────┘  └───────────┘  └──────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                       Data Layer                                 │
+│    ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌──────────┐  │
+│    │  Convex   │  │    AWS    │  │ Pinecone  │  │  GitHub  │  │
+│    │    DB     │  │    S3     │  │  Vector   │  │   API    │  │
+│    └───────────┘  └───────────┘  └───────────┘  └──────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow
+
+1. **User Authentication**: Clerk → Convex Auth validation → User session
+2. **GitHub Integration**: OAuth → Store tokens → Fetch repositories
+3. **Project Creation**: User input → Convex mutation → Database storage
+4. **AI Processing**: Repository indexed → Pinecone vector DB → RAG queries
+5. **Background Jobs**: Inngest triggers → Process repo → Update metrics
+
+---
+
+## Database Schema
+
+### Convex Database Tables
+
+#### 1. Users Table
+```typescript
+{
+  _id: Id<"users">,
+  name: string,
+  tokenIdentifier: string,        // Clerk user ID for authentication
+  email: string,
+  imageUrl?: string,
+  hasCompletedOnboarding: boolean,
+  githubUsername?: string,
+  githubAccessToken?: string,     // Encrypted token storage
+  last_sign_in?: number,
+  inviteLink?: string,
+  type: "free" | "pro" | "elite", // Plan type
+  limit: 2 | 5 | 15,             // Project limits per plan
+  createdAt: number,
+  updatedAt: number
+}
+
+// Indexes:
+// - by_token: [tokenIdentifier]
+```
+
+#### 2. Repositories Table
+```typescript
+{
+  _id: Id<"repositories">,
+  githubId: int64,               // GitHub repository ID
+  name: string,                  // Repository name
+  owner: string,                 // Repository owner username
+  fullName: string,              // owner/repo format
+  url: string,                   // GitHub repository URL
+  userId: Id<"users">,          // Foreign key to users
+  createdAt: number,
+  updatedAt: number
+}
+
+// Indexes:
+// - by_user: [userId]
+// - by_github_id: [githubId]
+```
+
+#### 3. Projects Table
+```typescript
+{
+  _id: Id<"projects">,
+  projectName: string,
+  description: string,
+  tags: string[],                // 2-5 tags for categorization
+  isPublic: boolean,             // Public project visibility
+  repositoryId: Id<"repositories">,
+  repoName: string,              // Denormalized for performance
+  repoFullName: string,          // e.g., "owner/repo-name"
+  repoOwner: string,
+  repoUrl: string,
+  thumbnailUrl?: string,         // S3 stored thumbnail
+  lookingForMembers?: Array<{
+    role: string,
+    type: "casual" | "part-time" | "serious"
+  }>,
+  ownerId: Id<"users">,
+  about?: string,
+  projectStars?: number,         // WeKraft platform stars
+  projectForks?: number,         // WeKraft platform forks
+  projectUpvotes?: number,
+  healthScore?: {
+    totalScore: number,          // 0-100
+    activityMomentum: number,    // 0-35
+    maintenanceQuality: number,  // 0-35
+    communityTrust: number,      // 0-20
+    freshness: number,           // 0-10
+    lastCalculatedDate: string,  // YYYY-MM-DD
+    previousScores: Array<{
+      totalScore: number,
+      calculatedDate: string
+    }>
+  },
+  createdAt: number,
+  updatedAt: number
+}
+
+// Indexes:
+// - by_owner: [ownerId]
+// - by_repository: [repositoryId]
+// - by_public: [isPublic]
+```
+
+#### 4. Reviews Table
+```typescript
+{
+  _id: Id<"reviews">,
+  repositoryId: Id<"repositories">,
+  prNumber: number,
+  prTitle: string,
+  prUrl: string,
+  review: string,                // AI-generated review content
+  status: "completed" | "failed" | "pending",
+  createdAt: number,
+  updatedAt: number
+}
+
+// Indexes:
+// - by_repository: [repositoryId]
+```
+
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    USERS ||--o{ PROJECTS : owns
+    USERS ||--o{ REPOSITORIES : connects
+    REPOSITORIES ||--o{ PROJECTS : "linked to"
+    REPOSITORIES ||--o{ REVIEWS : has
+    PROJECTS ||--o{ PROJECT_MEMBERS : includes
+    USERS ||--o{ PROJECT_MEMBERS : participates
+    
+    USERS {
+        string _id PK
+        string tokenIdentifier UK
+        string email
+        string githubUsername
+        string type
+        number limit
+    }
+    
+    REPOSITORIES {
+        string _id PK
+        int64 githubId UK
+        string fullName
+        string userId FK
+    }
+    
+    PROJECTS {
+        string _id PK
+        string repositoryId FK
+        string ownerId FK
+        boolean isPublic
+        object healthScore
+    }
+    
+    REVIEWS {
+        string _id PK
+        string repositoryId FK
+        number prNumber
+        string status
+    }
+```
+
+---
+
+## Complete File Structure
+
+### Root Directory
+```
+WeKraft-Demo/
+├── .env.local                  # Environment variables (gitignored)
+├── .git/                       # Git repository
+├── .gitignore                  # Git ignore rules
+├── .next/                      # Next.js build output
+├── AUTH_FLOW_ANALYSIS.txt      # Authentication flow documentation
+├── README.md                   # Basic project readme
+├── biome.json                  # Biome linter/formatter config
+├── components.json             # shadcn/ui components config
+├── design.md                   # System design document (28KB+)
+├── next-env.d.ts              # Next.js TypeScript declarations
+├── next.config.ts             # Next.js configuration
+├── node_modules/              # Dependencies
+├── package.json               # Project dependencies
+├── pnpm-lock.yaml             # Lockfile for pnpm
+├── pnpm-workspace.yaml        # pnpm workspace configuration
+├── postcss.config.mjs         # PostCSS configuration
+├── public/                    # Public static assets
+├── requirements.md            # Project requirements (9KB+)
+├── todo.txt                   # Development todo list
+├── tsconfig.json             # TypeScript configuration
+├── convex/                    # Convex backend
+│   ├── _generated/           # Auto-generated Convex types
+│   ├── auth.config.ts        # Clerk authentication config
+│   ├── projects.ts           # Project CRUD operations
+│   ├── repos.ts              # Repository operations
+│   ├── schema.ts             # Database schema definition
+│   └── users.ts              # User management functions
+└── src/                       # Source code
+```
+
+### src/ Directory Structure
+
+```
+src/
+├── proxy.ts                   # Proxy configuration
+├── app/                       # Next.js App Router
+│   ├── layout.tsx            # Root layout
+│   ├── page.tsx              # Home page
+│   ├── globals.css           # Global styles
+│   ├── favicon.ico           # Favicon
+│   ├── (auth)/               # Authentication routes
+│   │   └── auth/
+│   │       ├── page.tsx
+│   │       ├── callback/
+│   │       │   └── page.tsx  # OAuth callback handler
+│   │       └── _components/
+│   │           └── design.tsx
+│   ├── (clerk-auth)/         # Clerk authentication UI
+│   │   ├── layout.tsx
+│   │   └── sign-in/
+│   │       └── [[...sign-in]]/
+│   │           └── page.tsx  # Clerk sign-in page
+│   ├── (main)/               # Main application routes
+│   │   └── dashboard/
+│   │       ├── layout.tsx
+│   │       ├── page.tsx      # Dashboard home
+│   │       ├── @sidebar/     # Parallel route for sidebar
+│   │       │   └── default.tsx
+│   │       └── my-projects/
+│   │           └── [id]/
+│   │               ├── page.tsx  # Project detail page
+│   │               └── workspace/
+│   │                   ├── layout.tsx
+│   │                   ├── page.tsx  # Project workspace/IDE
+│   │                   └── @sidebar/
+│   │                       └── default.tsx
+│   ├── actions/              # Server actions
+│   │   └── inngest.ts        # Inngest trigger actions
+│   ├── api/                  # API routes
+│   │   ├── chat/
+│   │   │   └── route.ts      # AI chat endpoint
+│   │   ├── inngest/
+│   │   │   └── route.ts      # Inngest webhook handler
+│   │   ├── objects/
+│   │   │   └── route.ts      # S3 object management
+│   │   └── upload/
+│   │       └── route.ts      # File upload endpoint
+│   └── onboard/              # Onboarding flow
+│       └── [userid]/
+│           └── page.tsx      # User onboarding page
+│
+├── components/               # Reusable components
+│   ├── er-store.tsx         # Entity Relationship store
+│   ├── HeaderProfile.tsx    # User profile header
+│   ├── SearchBar.tsx        # Search component
+│   ├── Store.tsx            # Global store
+│   ├── Universal-static-storage.tsx
+│   ├── ai-elements/         # AI-specific UI components
+│   │   ├── artifact.tsx
+│   │   ├── canvas.tsx
+│   │   ├── chain-of-thought.tsx
+│   │   ├── checkpoint.tsx
+│   │   ├── code-block.tsx
+│   │   ├── confirmation.tsx
+│   │   ├── connection.tsx
+│   │   ├── context.tsx
+│   │   ├── controls.tsx
+│   │   ├── conversation.tsx
+│   │   ├── edge.tsx
+│   │   ├── image.tsx
+│   │   ├── inline-citation.tsx
+│   │   ├── loader.tsx
+│   │   ├── message.tsx
+│   │   ├── model-selector.tsx
+│   │   ├── node.tsx
+│   │   ├── open-in-chat.tsx
+│   │   ├── panel.tsx
+│   │   ├── plan.tsx
+│   │   ├── prompt-input.tsx
+│   │   ├── queue.tsx
+│   │   ├── reasoning.tsx
+│   │   ├── shimmer.tsx
+│   │   ├── sources.tsx
+│   │   ├── suggestion.tsx
+│   │   ├── task.tsx
+│   │   ├── tool.tsx
+│   │   ├── toolbar.tsx
+│   │   └── web-preview.tsx
+│   └── ui/                  # shadcn/ui components
+│       ├── accordion.tsx
+│       ├── alert-dialog.tsx
+│       ├── alert.tsx
+│       ├── avatar.tsx
+│       ├── badge.tsx
+│       ├── button.tsx
+│       ├── card.tsx
+│       ├── dialog.tsx
+│       ├── input.tsx
+│       ├── select.tsx
+│       ├── separator.tsx
+│       ├── skeleton.tsx
+│       ├── tabs.tsx
+│       ├── tooltip.tsx
+│       └── [50+ more UI components]
+│
+├── hooks/                   # Custom React hooks
+│   ├── use-mobile.ts       # Mobile detection hook
+│   └── use-user-store.ts   # User state management
+│
+├── inngest/                # Inngest background jobs
+│   ├── client.ts          # Inngest client configuration
+│   └── functions/
+│       └── index.ts       # Background job definitions
+│
+├── lib/                    # Utility libraries
+│   ├── Gemini.ts          # Google Gemini AI integration
+│   ├── pinecone.ts        # Pinecone vector DB client
+│   └── utils.ts           # General utilities
+│
+├── modules/                # Feature modules
+│   ├── authFlow/
+│   │   ├── multi-step.tsx # Multi-step auth form
+│   │   ├── repo.ts        # Repository utilities
+│   │   └── use-repo.tsx   # Repository hooks
+│   ├── custom/
+│   │   └── AiLoader.tsx   # AI loading animation
+│   ├── dashboard/
+│   │   ├── appSidebar.tsx           # Main app sidebar
+│   │   ├── ContributionGraph.tsx    # GitHub-style contrib graph
+│   │   ├── ImpactDisplay.tsx        # User impact metrics
+│   │   ├── ImpactScore.ts           # Impact calculation logic
+│   │   ├── index.ts
+│   │   ├── PieDisplay1.tsx          # Pie chart component
+│   │   ├── SidebarBreadcrumb.tsx    # Breadcrumb navigation
+│   │   └── ThemeButton.tsx          # Theme toggle
+│   ├── github/
+│   │   └── action.ts      # GitHub API integration
+│   ├── my-project/
+│   │   ├── Abouttab.tsx   # Project about tab
+│   │   ├── EntityNode.tsx # ER diagram nodes
+│   │   ├── ErHelper.ts    # ER diagram helpers
+│   │   ├── index.ts
+│   │   ├── projectSidebar.tsx  # Project workspace sidebar
+│   │   ├── settingsTab.tsx     # Project settings
+│   │   └── Stats.tsx      # Project statistics
+│   ├── Pinecone/
+│   │   └── rag.ts         # RAG implementation
+│   └── web/
+│       └── header.tsx     # Website header
+│
+├── providers/              # React context providers
+│   ├── ConvexClientProvider.tsx  # Convex client setup
+│   ├── QueryProvider.tsx         # TanStack Query setup
+│   └── theme-provider.tsx        # Theme context
+│
+├── scripts/                # Utility scripts
+│   └── deleteindex.ts     # Pinecone index cleanup
+│
+└── types/                  # TypeScript type definitions
+    └── ERmodel.ts         # ER diagram types
+```
+
+---
+
+## Features & Functionality
+
+### 1. Authentication & User Management
+
+**Implementation**: Clerk + Convex integration
+
+**Features**:
+- OAuth authentication with GitHub
+- User profile management
+- Onboarding flow for new users
+- JWT-based session management
+- Role-based access control
+
+**Key Files**:
+- [src/app/(clerk-auth)/sign-in/[[...sign-in]]/page.tsx](file:///c:/Users/Ritesh%20Sinha/OneDrive/Desktop/WeKraft-Demo/src/app/%28clerk-auth%29/sign-in/%5B%5B...sign-in%5D%5D/page.tsx) - Sign-in page
+- [src/app/(auth)/auth/callback/page.tsx](file:///c:/Users/Ritesh%20Sinha/OneDrive/Desktop/WeKraft-Demo/src/app/%28auth%29/auth/callback/page.tsx) - OAuth callback handler
+- [src/app/onboard/[userid]/page.tsx](file:///c:/Users/Ritesh%20Sinha/OneDrive/Desktop/WeKraft-Demo/src/app/onboard/%5Buserid%5D/page.tsx) - Onboarding flow
+- [convex/auth.config.ts](file:///C:/Users/Ritesh%20Sinha/OneDrive/Desktop/WeKraft-Demo/convex/auth.config.ts) - Clerk authentication configuration
+- [convex/users.ts](file:///C:/Users/Ritesh%20Sinha/OneDrive/Desktop/WeKraft-Demo/convex/users.ts) - User management functions
+
+### 2. GitHub Integration
+
+**Features**:
+- Connect GitHub repositories
+- Fetch repository data and statistics
+- OAuth token management
+- Repository indexing for AI features
+- Pull request monitoring
+
+**Key Files**:
+- [src/modules/github/action.ts](file:///c:/Users/Ritesh%20Sinha/OneDrive/Desktop/WeKraft-Demo/src/modules/github/action.ts) - GitHub API client
+- [convex/repos.ts](file:///C:/Users/Ritesh%20Sinha/OneDrive/Desktop/WeKraft-Demo/convex/repos.ts) - Repository CRUD operations
+- [src/inngest/functions/index.ts](file:///C:/Users/Ritesh%20Sinha/OneDrive/Desktop/WeKraft-Demo/src/inngest/functions/index.ts) - Repository indexing job
+
+**Functions**:
+```typescript
+// Fetch user repositories from GitHub
+getUserGithubToken(userId: string)
+getRepoFileContents(owner: string, repo: string, token: string)
+```
+
+### 3. Project Management
+
+**Features**:
+- Create and manage projects
+- Link projects to GitHub repositories
+- Project visibility control (public/private)
+- Project tagging and categorization
+- Thumbnail image upload (AWS S3)
+- Team member management
+- Project discovery
+
+**Key Files**:
+- [src/app/(main)/dashboard/my-projects/[id]/page.tsx](file:///c:/Users/Ritesh%20Sinha/OneDrive/Desktop/WeKraft-Demo/src/app/%28main%29/dashboard/my-projects/%5Bid%5D/page.tsx) - Project detail page
+- [convex/projects.ts](file:///C:/Users/Ritesh%20Sinha/OneDrive/Desktop/WeKraft-Demo/convex/projects.ts) - Project CRUD operations
+- `src/modules/my-project/` - Project-specific components
+
+**Components**:
+- Stats Tab: Repository statistics and analytics
+- Settings Tab: Project configuration
+- About Tab: Project description and documentation
+- Requests Tab: Collaboration requests (planned)
+
+### 4. AI-Powered Features
+
+#### A. AI Chat Assistant
+
+**Features**:
+- Context-aware code assistance
+- Repository-specific Q&A using RAG
+- Streaming AI responses
+- Multiple AI model support (Google Gemini, OpenAI)
+
+**Key Files**:
+- `src/app/api/chat/route.ts` - Chat API endpoint
+- `src/lib/Gemini.ts` - Google Gemini integration
+- `src/components/ai-elements/` - AI UI components
+
+#### B. Vector Search (RAG)
+
+**Features**:
+- Repository code indexing to Pinecone
+- Semantic code search
+- Context retrieval for AI queries
+
+**Key Files**:
+- `src/lib/pinecone.ts` - Pinecone client
+- `src/modules/Pinecone/rag.ts` - RAG implementation
+- `src/inngest/functions/index.ts` - Indexing background job
+
+**Workflow**:
+1. User connects repository → Inngest event triggered
+2. Repository files fetched from GitHub
+3. Files processed and embedded
+4. Vectors stored in Pinecone
+5. AI chat queries vector DB for relevant context
+
+### 5. Project Health Scoring
+
+**Features**:
+- Automated health score calculation
+- Multi-dimensional metrics:
+  - Activity Momentum (0-35): Commits, PRs, issues
+  - Maintenance Quality (0-35): Code quality, docs
+  - Community Trust (0-20): Stars, forks, engagement
+  - Freshness (0-10): Recent activity
+- Historical score tracking
+- Visual health indicators
+
+**Key Files**:
+- `convex/projects.ts` - Health score calculation
+- `src/modules/my-project/Stats.tsx` - Health score display
+
+**Database Schema**:
+```typescript
+healthScore: {
+  totalScore: number,           // 0-100
+  activityMomentum: number,     // 0-35
+  maintenanceQuality: number,   // 0-35
+  communityTrust: number,       // 0-20
+  freshness: number,            // 0-10
+  lastCalculatedDate: string,
+  previousScores: Array<{
+    totalScore: number,
+    calculatedDate: string
+  }>
+}
+```
+
+### 6. Project Workspace
+
+**Features**:
+- Dedicated workspace for each project
+- Entity-Relationship diagram visualization
+- Code viewer
+- Documentation explorer
+- AI-assisted development
+
+**Key Files**:
+- `src/app/(main)/dashboard/my-projects/[id]/workspace/page.tsx`
+- `src/modules/my-project/EntityNode.tsx` - ER diagram nodes
+- `src/modules/my-project/projectSidebar.tsx` - Workspace sidebar
+
+### 7. File Storage (AWS S3)
+
+**Features**:
+- Project thumbnail uploads
+- User avatar storage
+- Document storage
+- Presigned URL generation
+- Automatic file cleanup
+
+**Key Files**:
+- `src/app/api/upload/route.ts` - File upload endpoint
+- `src/app/api/objects/route.ts` - S3 object management
+
+**S3 Bucket Structure**:
+```
+wekraft-assets/
+├── projects/{projectId}/thumbnails/
+├── users/{userId}/avatars/
+└── documents/
+```
+
+### 8. Background Jobs (Inngest)
+
+**Features**:
+- Asynchronous repository indexing
+- Scheduled health score updates
+- Batch processing tasks
+- Retry mechanisms
+
+**Key Files**:
+- `src/inngest/client.ts` - Inngest configuration
+- `src/inngest/functions/index.ts` - Job definitions
+- `src/app/api/inngest/route.ts` - Webhook handler
+- `src/app/actions/inngest.ts` - Job triggers
+
+**Jobs**:
+```typescript
+// Repository Indexing Job
+indexRepo.createFunction(
+  { id: "index-repo" },
+  { event: "repository-connected" },
+  async ({ event, step }) => {
+    // 1. Fetch repository files
+    // 2. Index to Pinecone
+    // 3. Update status
+  }
+)
+```
+
+###9. Dashboard & Analytics
+
+**Features**:
+- User dashboard with project overview
+- Contribution graphs (GitHub-style)
+- Impact score visualization
+- Project statistics
+- Activity timeline
+
+**Key Files**:
+- `src/app/(main)/dashboard/page.tsx` - Dashboard home
+- `src/modules/dashboard/ContributionGraph.tsx`
+- `src/modules/dashboard/ImpactDisplay.tsx`
+- `src/modules/dashboard/ImpactScore.ts`
+
+---
+
+## API Endpoints
+
+### Convex Functions (Database API)
+
+#### User Management
+```typescript
+// GET current user
+api.users.getCurrentUser()
+
+// UPDATE user profile
+api.users.updateUserProfile({
+  name: string,
+  githubUsername?: string
+})
+
+// CREATE user
+api.users.createUser({
+  tokenIdentifier: string,
+  email: string,
+  name: string
+})
+```
+
+#### Project Management
+```typescript
+// GET all projects for user
+api.projects.getAllProjects({ userId: Id<"users"> })
+
+// GET single project
+api.projects.getProjectById({ projectId: Id<"projects"> })
+
+// CREATE project
+api.projects.createProject({
+  projectName: string,
+  description: string,
+  repositoryId: Id<"repositories">,
+  tags: string[],
+  isPublic: boolean
+})
+
+// UPDATE project
+api.projects.updateProject({
+  projectId: Id<"projects">,
+  updates: Partial<Project>
+})
+
+// UPDATE thumbnail
+api.projects.updateThumbnail({
+  projectId: Id<"projects">,
+  thumbnailUrl: string
+})
+
+// DELETE project
+api.projects.deleteProject({ projectId: Id<"projects"> })
+```
+
+#### Repository Management
+```typescript
+// GET repositories for user
+api.repos.getUserRepositories({ userId: Id<"users"> })
+
+// CREATE repository connection
+api.repos.connectRepository({
+  githubId: int64,
+  name: string,
+  owner: string,
+  fullName: string,
+  url: string
+})
+```
+
+### Next.js API Routes
+
+#### POST /api/chat
+**Purpose**: AI chat assistant endpoint
+
+**Request**:
+```typescript
+{
+  messages: Array<{
+    role: "user" | "assistant",
+    content: string
+  }>,
+  projectId?: string
+}
+```
+
+**Response**: Streaming AI response
+
+#### POST /api/upload
+**Purpose**: File upload to S3
+
+**Request**: `multipart/form-data`
+- `file`: File to upload
+
+**Response**:
+```json
+{
+  "url": "https://s3.amazonaws.com/bucket/key",
+  "key": "uploads/filename.ext"
+}
+```
+
+#### POST /api/objects
+**Purpose**: S3 object management
+
+**Request**:
+```typescript
+{
+  action: "upload" | "delete",
+  file?: File,
+  oldUrl?: string
+}
+```
+
+**Response**:
+```json
+{
+  "url": "https://s3.amazonaws.com/bucket/key",
+  "success": true
+}
+```
+
+#### PUT /api/inngest
+**Purpose**: Inngest webhook handler for background jobs
+
+**Request**: Inngest event payload
+
+**Response**: Job execution status
+
+---
+
+## Authentication & Authorization
+
+### Authentication Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Clerk
+    participant NextJS
+    participant Convex
+    participant GitHub
+
+    User->>Clerk: Sign in with GitHub
+    Clerk->>GitHub: OAuth request
+    GitHub->>Clerk: Auth token
+    Clerk->>NextJS: JWT token
+    NextJS->>Convex: Verify JWT
+    Convex->>Convex: Get/Create user
+    Convex->>NextJS: User session
+    NextJS->>User: Redirect to dashboard
+```
+
+### Authorization Levels
+
+1. **Public Access**: View public projects
+2. **Authenticated User**: Create projects, manage own content
+3. **Project Owner**: Full project management
+4. **Pro/Elite Users**: Additional features and limits
+
+### Security Measures
+
+- JWT-based authentication
+- Encrypted GitHub token storage
+- CORS configuration for API routes
+- Server-side validation for all mutations
+- Rate limiting on API endpoints
+- Secure S3 presigned URLs with expiration
+
+---
+
+## Third-Party Integrations
+
+### 1. Clerk Authentication
+
+**Purpose**: User authentication and management
+
+**Configuration**:
+```typescript
+// convex/auth.config.ts
+export default {
+  providers: [
+    {
+      domain: process.env.CLERK_JWT_ISSUER_DOMAIN,
+      applicationID: "convex",
+    },
+  ],
+};
+```
+
+**Environment Variables**:
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+- `CLERK_SECRET_KEY`
+- `CLERK_JWT_ISSUER_DOMAIN`
+
+### 2. GitHub OAuth
+
+**Purpose**: Repository access and user data
+
+**Scopes Required**:
+- `repo`: Full repository access
+- `user`: User profile data
+- `read:org`: Organization information
+
+**Token Storage**: Encrypted in Convex database
+
+### 3. Pinecone Vector Database
+
+**Purpose**: Semantic code search and RAG
+
+**Configuration**:
+```typescript
+// src/lib/pinecone.ts
+const pinecone = new Pinecone({
+  apiKey: process.env.PINECONE_API_KEY,
+  environment: process.env.PINECONE_ENVIRONMENT
+});
+```
+
+**Index Structure**:
+- Dimension: 1536 (OpenAI embeddings)
+- Metric: Cosine similarity
+- Metadata: File path, repository info, code language
+
+### 4. AWS S3
+
+**Purpose**: File and asset storage
+
+**Configuration**:
+```typescript
+import { S3Client } from "@aws-sdk/client-s3";
+
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+  }
+});
+```
+
+**Buckets**:
+- `wekraft-project-assets`: Project files
+- `wekraft-user-uploads`: User-generated content
+
+### 5. Google Gemini AI
+
+**Purpose**: AI chat and code analysis
+
+**Models**:
+- `gemini-pro`: General chat
+- `gemini-pro-vision`: Image analysis
+
+### 6. Inngest
+
+**Purpose**: Background job processing
+
+**Configuration**:
+```typescript
+// src/inngest/client.ts
+export const inngest = new Inngest({
+  id: "wekraft-demo",
+  name: "WeKraft Demo"
+});
+```
+
+**Events**:
+- `repository-connected`: Triggered when user connects a repo
+- `health-score-update`: Scheduled health recalculation
+
+---
+
+## Setup & Installation
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm 8+
+- Git
+- Clerk account
+- Convex account
+- AWS account (for S3)
+- Pinecone account
+- GitHub OAuth app
+
+### Installation Steps
+
+1. **Clone the repository**
+```bash
+git clone <repository-url>
+cd WeKraft-Demo
+```
+
+2. **Install dependencies**
+```bash
+pnpm install
+```
+
+3. **Set up environment variables**
+
+Create `.env.local`:
+```bash
+# Copy from .env.example
+cp .env.example .env.local
+```
+
+Fill in all required variables (see [Environment Variables](#environment-variables))
+
+4. **Initialize Convex**
+```bash
+pnpm dlx convex dev
+```
+
+This will:
+- Create a new Convex project (if needed)
+- Set up the database schema
+- Start the Convex dev server
+
+5. **Initialize Inngest**
+```bash
+npx inngest-cli@latest dev
+```
+
+6. **Start the development server**
+```bash
+pnpm dev
+```
+
+The application will be available at `http://localhost:3000`
+
+### Development Workflow
+
+1. **Run all services concurrently**:
+```bash
+# Terminal 1: Next.js
+pnpm dev
+
+# Terminal 2: Convex
+pnpm dlx convex dev
+
+# Terminal 3: Inngest
+npx --ignore-scripts=false inngest-cli@latest dev
+```
+
+2. **Access development tools**:
+- Application: `http://localhost:3000`
+- Inngest Dev UI: `http://localhost:8288`
+- Convex Dashboard: via Convex CLI
+
+---
+
+## Environment Variables
+
+### Required Variables
+
+```bash
+# ============================================
+# Next.js
+# ============================================
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# ============================================
+# Clerk Authentication
+# ============================================
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+CLERK_JWT_ISSUER_DOMAIN=https://your-app.clerk.accounts.dev
+
+# Sign-in/out URLs
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboard
+
+# ============================================
+# Convex Database
+# ============================================
+NEXT_PUBLIC_CONVEX_URL=https://your-project.convex.cloud
+CONVEX_DEPLOYMENT=dev:your-deployment-name
+
+# ============================================
+# GitHub OAuth
+# ============================================
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+
+# ============================================
+# AWS S3
+# ============================================
+AWS_REGION=ap-south-1
+AWS_ACCESS_KEY_ID=AKIA...
+AWS_SECRET_ACCESS_KEY=...
+AWS_S3_BUCKET_NAME=wekraft-project-assets
+AWS_CLOUDFRONT_DOMAIN=d123456.cloudfront.net
+
+# ============================================
+# Pinecone Vector Database
+# ============================================
+PINECONE_API_KEY=your_pinecone_api_key
+PINECONE_ENVIRONMENT=gcp-starter
+PINECONE_INDEX_NAME=wekraft-code-index
+
+# ============================================
+# AI Services
+# ============================================
+# Google Gemini
+GOOGLE_AI_API_KEY=...
+
+# OpenAI (for embeddings)
+OPENAI_API_KEY=sk-...
+
+# ============================================
+# Inngest
+# ============================================
+INNGEST_EVENT_KEY=...
+INNGEST_SIGNING_KEY=...
+
+# ============================================
+# Security
+# ============================================
+ENCRYPTION_KEY=your-32-character-encryption-key
+```
+
+### Optional Variables
+
+```bash
+# ============================================
+# Analytics & Monitoring
+# ============================================
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+
+# ============================================
+# Feature Flags
+# ============================================
+NEXT_PUBLIC_ENABLE_AI_FEATURES=true
+NEXT_PUBLIC_ENABLE_HEALTH_SCORING=true
+```
+
+---
+
+## Deployment
+
+### Vercel Deployment (Recommended)
+
+1. **Connect to Vercel**
+```bash
+pnpm dlx vercel
+```
+
+2. **Set environment variables** in Vercel dashboard
+
+3. **Deploy Convex to production**
+```bash
+npx convex deploy --prod
+```
+
+4. **Update environment variables** with production Convex URL
+
+5. **Deploy**
+```bash
+pnpm dlx vercel --prod
+```
+
+### AWS Deployment
+
+**Prerequisites**:
+- S3 bucket configured
+- CloudFront distribution (optional, for CDN)
+- IAM roles and policies set up
+
+**S3 Bucket Configuration**:
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::wekraft-project-assets/public/*"
+    }
+  ]
+}
+```
+
+### Production Checklist
+
+- [ ] All environment variables configured
+- [ ] Convex deployed to production
+- [ ] S3 buckets created and configured
+- [ ] Pinecone index created
+- [ ] Clerk production app configured
+- [ ] GitHub OAuth app updated with production URLs
+- [ ] Inngest production environment configured
+- [ ] SSL certificates installed
+- [ ] DNS configured
+- [ ] Monitoring and logging set up
+
+---
+
+## Project Statistics
+
+- **Total Files**: 225+ source files
+- **Components**: 90+ (60 UI components, 30+ feature components)
+- **API Routes**: 4 Next.js routes
+- **Convex Functions**: 20+ (queries, mutations, actions)
+- **Database Tables**: 4 core tables
+- **Background Jobs**: 2+ Inngest functions
+- **Third-party Integrations**: 6 major services
+
+---
+
+## Development Scripts
+
+```json
+{
+  "dev": "next dev",                    // Start Next.js dev server
+  "inngest:dev": "...",                 // Start Inngest dev server
+  "build": "next build",               // Build for production
+  "start": "next start",               // Start production server
+  "lint": "biome check",               // Run linter
+  "format": "biome format --write"     // Format code
+}
+```
+
+---
+
+## Support & Documentation
+
+- **Design Document**: `design.md` - Comprehensive system design
+- **Requirements**: `requirements.md` - Project requirements and specifications
+- **Auth Flow Analysis**: `AUTH_FLOW_ANALYSIS.txt` - Authentication implementation details
+- **Todo List**: `todo.txt` - Development roadmap
+
+---
+
+**Last Updated**: January 29, 2026  
+**Documentation Version**: 1.0.0  
+**Project Version**: 0.1.0

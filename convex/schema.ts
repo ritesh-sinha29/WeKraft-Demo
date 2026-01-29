@@ -61,6 +61,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_repository", ["repositoryId"]),
+
   // ===============================
   // PROJECTS TABLE
   // ===============================
@@ -122,6 +123,30 @@ export default defineSchema({
     .index("by_owner", ["ownerId"])
     .index("by_repository", ["repositoryId"])
     .index("by_public", ["isPublic"]), // For discovering public projects
+
+  // ===============================
+  // UI/UX STUDIO TABLES
+  // ===============================
+  uiFrames: defineTable({
+    projectId: v.id("projects"),
+    frameId: v.string(), // UUID for client-side routing
+    frameName: v.string(), // User-provided name for the frame
+    designCode: v.string(), // HTML/Tailwind code
+    userId: v.id("users"),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_frame_id", ["frameId"])
+    .index("by_user", ["userId"]),
+
+  uiChats: defineTable({
+    frameId: v.string(), // References uiFrames.frameId
+    role: v.union(v.literal("user"), v.literal("assistant")),
+    content: v.string(),
+    userId: v.id("users"),
+    createdAt: v.number(),
+  }).index("by_frame", ["frameId"]),
 
   // ====================
   //  projectMembers: defineTable({
