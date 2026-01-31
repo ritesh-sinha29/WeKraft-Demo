@@ -12,6 +12,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   Collapsible,
@@ -43,6 +44,7 @@ import {
   Bot,
   Link2,
   Mic,
+  SidebarClose,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -70,27 +72,27 @@ const workspaceMenu = [
   },
   {
     label: "Tasks",
-    path: "tasks",
+    path: "workspace/tasks",
     icon: ClipboardList,
   },
   {
     label: "Time Logs",
-    path: "time-logs",
+    path: "workspace/time-logs",
     icon: AudioWaveform,
   },
   {
     label: "Teamspace",
-    path: "teamspace",
+    path: "workspace/teamspace",
     icon: PlaneTakeoff,
   },
   {
     label: "Activity feed",
-    path: "activity",
+    path: "workspace/activity",
     icon: Activity,
   },
   {
     label: "Whiteboard",
-    path: "whiteboard",
+    path: "workspace/whiteboard",
     icon: PenTool,
   },
 ];
@@ -101,17 +103,17 @@ const aiMenu = {
   items: [
     {
       label: "UI/UX Studio",
-      path: "ai/ui-ux-studio",
+      path: "workspace/ai-studio/ui-ux-studio",
       icon: Code2,
     },
     {
       label: "Repo Agent",
-      path: "ai/repo-agent",
+      path: "workspace/ai-studio/repo-agent",
       icon: Network,
     },
     {
       label: "Doc Agent",
-      path: "ai/doc-agent",
+      path: "workspace/ai-studio/doc-agent",
       icon: FileText,
     },
   ],
@@ -131,6 +133,7 @@ export default function ProjectSidebar() {
   );
 
   const project = useQuery(api.projects.getProjectById, { projectId });
+  const { toggleSidebar } = useSidebar();
 
   useEffect(() => {
     setMounted(true);
@@ -155,8 +158,8 @@ export default function ProjectSidebar() {
             {project?.projectName}
           </h1>
 
-          <Button size="icon-sm" variant={"ghost"}>
-            <ChevronLeft />
+          <Button size="icon-sm" variant={"ghost"} onClick={toggleSidebar}>
+            <SidebarClose/>
           </Button>
         </div>
         {/* SHOWING GITHUB CONNECTED ACCOUNT */}
