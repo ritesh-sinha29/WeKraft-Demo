@@ -56,7 +56,7 @@ export function RepositoryList({
     setIsConnecting(true);
     try {
       await createRepo({
-        githubId: BigInt(repo.id),
+        githubId: repo.id,
         name: repo.name,
         owner: repo.owner.login,
         fullName: repo.full_name,
@@ -107,7 +107,7 @@ export function RepositoryList({
         </p>
       ) : (
         filteredRepos.map((repo) => {
-          const isConnected = storedRepo?.githubId === BigInt(repo.id);
+          const isConnected = storedRepo?.githubId === repo.id;
           const isOtherConnected = !!storedRepo && !isConnected;
 
           return (

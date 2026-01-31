@@ -3,7 +3,7 @@ import { v } from "convex/values";
 
 export const createRepository = mutation({
   args: {
-    githubId: v.int64(),
+    githubId: v.number(),
     name: v.string(),
     owner: v.string(),
     fullName: v.string(),

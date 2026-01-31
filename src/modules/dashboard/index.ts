@@ -82,7 +82,7 @@ export async function getDahboardStats(githubName: string) {
 // ==================================
 // GET HEATMAPS CONTRIBUTION
 // ==================================
-export async function getContributionStats(githubName: string) {
+export async function getContributionStats(githubName: string, year?: number) {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -91,12 +91,67 @@ export async function getContributionStats(githubName: string) {
 
     const accessToken = await getGithubAccessToken();
     console.log("accessToken", accessToken);
+
+    let from: string | undefined;
+    let to: string | undefined;
+
+    if (year) {
+      from = `${year}-01-01T00:00:00Z`;
+      to = `${year}-12-31T23:59:59Z`;
+    }
+
     // Need to remove ronitrai27
-    const calendar = await fetchUserContributions(accessToken, githubName);
+    const calendar = await fetchUserContributions(
+      accessToken,
+      githubName,
+      from,
+      to
+    );
     // console.log("calendar", calendar);
 
+    // ==========================================
+    // CALCULATE LIFETIME CONTRIBUTIONS
+    // ==========================================
+    // 2. Fetch total for every year
+    let creationYear = new Date().getFullYear();
+    try {
+      const octokit = new Octokit({ auth: accessToken });
+      const { data: user } = await octokit.rest.users.getByUsername({
+        username: githubName,
+      });
+      if (user.created_at) {
+        creationYear = new Date(user.created_at).getFullYear();
+      }
+    } catch (e) {
+      // console.error("Failed to fetch creation year, using current year", e);
+    }
+    
+    const currentYear = new Date().getFullYear();
+
+    const yearPromises = [];
+    for (let y = creationYear; y <= currentYear; y++) {
+      yearPromises.push(
+        fetchUserContributions(
+          accessToken,
+          githubName,
+          `${y}-01-01T00:00:00Z`,
+          `${y}-12-31T23:59:59Z`
+        )
+      );
+    }
+
+    const yearlyCalendars = await Promise.all(yearPromises);
+    const lifetimeTotal = yearlyCalendars.reduce(
+      (sum, cal) => sum + (cal?.totalContributions || 0),
+      0
+    );
+
     if (!calendar) {
-      return [];
+      return {
+        contributions: [],
+        totalContributions: 0,
+        lifetimeTotal: 0,
+      };
     }
 
     const contributions = calendar.weeks.flatMap((week: any) =>
@@ -110,12 +165,16 @@ export async function getContributionStats(githubName: string) {
     return {
       contributions,
       totalContributions: calendar.totalContributions,
+      lifetimeTotal,
+      creationYear,
     };
   } catch (error) {
     console.log(error);
     return {
       contributions: [],
       totalContributions: 0,
+      lifetimeTotal: 0,
+      creationYear: new Date().getFullYear(),
     };
   }
 }
