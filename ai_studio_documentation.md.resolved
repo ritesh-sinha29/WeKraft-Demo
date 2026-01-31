@@ -1,0 +1,124 @@
+# AI Studio Implementation Documentation
+
+## Overview
+The AI Studio (specifically the **UI/UX Studio Web Generator**) is a feature involved in creating, editing, and previewing AI-generated web interfaces. It allows users to generate UI components using natural language prompts or by cloning existing websites via URL scraping.
+
+**Location**: `src/app/(main)/dashboard/my-projects/[id]/workspace/ai-studio/ui-ux-studio/web-generator/`
+
+## Architecture
+
+The implementation follows a modern Full Stack flow:
+1.  **Client (Next.js)**: Handles user interaction, chat interface, and real-time preview.
+2.  **API Layer (Next.js API Route)**: Interfaces with AI models (Gemini) and Screenshot services.
+3.  **Database (Convex)**: Persists frames (designs) and chat history.
+
+---
+
+## 1. Frontend Implementation
+**File**: `src/app/(main)/dashboard/my-projects/[id]/workspace/ai-studio/ui-ux-studio/web-generator/page.tsx`
+
+### Key Components & State
+The `UIUXStudio` component manages complex local state:
+-   **Chat State**: `messages`, `input`, `isGenerating`.
+-   **Design State**: `designCode` (holds the generated HTML/Tailwind string), `currentFrameId`.
+-   **Preview State**: `iframeRef` for direct DOM manipulation, `selectedScreen` (web/mobile).
+-   **URL Detection**: `detectedUrl` and `isScrapingUrl` for the cloning feature.
+
+### Core Features
+1.  **Chat Interface**:
+    *   Displays a conversation history using reusable components from `@/components/ai-elements`.
+    *   Supports streaming responses where code blocks are extracted in real-time.
+2.  **Interactive Preview (Iframe)**:
+    *   Renders the `designCode` inside a sandboxed iframe.
+    *   Injects scripts for **interactive editing**:
+        *   **Hover Inspection**: Highlights elements on hover (`dotted blue outline`).
+        *   **Direct Editing**: Click to select ( `solid red outline`) and edit text content (`contenteditable`).
+    *   Includes standard libraries: Tailwind CSS (CDN), Flowbite (CDN), FontAwesome (CDN).
+3.  **URL to Design (Scraping)**:
+    *   Auto-detects URLs pasted in the input.
+    *   Triggers the "Scrape" flow which visually analyzes the website and attempts a pixel-perfect recreation.
+4.  **Export & Persistence**:
+    *   **Save**: Persists current design to Convex (`uiFrames`).
+    *   **Download**: Converts HTML to a functional React component (JSX) for download.
+    *   **Copy Code**: Utility to copy raw HTML.
+    *   **Full View**: Opens the design in a new window.
+
+---
+
+## 2. Backend Implementation (AI Logic)
+**File**: `src/app/api/ui-studio/route.ts`
+
+This is a Next.js Edge API Route handling `POST` requests with two main actions.
+
+### AI Provider
+-   **Model**: `gemini-3-pro-preview` (via `@ai-sdk/google`).
+-   **Streaming**: Uses `streamText` from the Vercel AI SDK for real-time frontend updates.
+
+### Actions
+#### 1. `scrape` (Website Cloning)
+*   **Input**: `url`
+*   **Process**:
+    1.  Validates URL.
+    2.  **Screenshot**: Calls `ScreenshotOne` API to capture a high-quality (Retina 2x), full-page screenshot.
+    3.  **Vision Analysis**: Sends the base64 screenshot to Gemini Vision.
+    4.  **Prompting**: Uses a massive, specialized system prompt ("EXPERT frontend developer with PHOTOGRAPHIC ATTENTION TO DETAIL") instructing the model to extract:
+        *   Exact Hex colors.
+        *   Typography settings (fonts, sizes, weights).
+        *   Layout structure (Flex/Grid).
+        *   Spacing (Tailwind scale).
+*   **Output**: Streams pixel-perfect HTML/Tailwind code.
+
+#### 2. `generate` (Chat-to-UI)
+*   **Input**: `messages` array.
+*   **Process**:
+    1.  Receives conversation context.
+    2.  **System Prompt**: "Expert UI/UX designer and frontend developer". Contains strict rules:
+        *   Use Tailwind CSS only.
+        *   Use Flowbite for complex components.
+        *   Use `placehold.co` for images.
+        *   **Blue (#3B82F6)** primary theme.
+    3.  **Code Triggers**: Looks for keywords like "create", "build", "nav", "hero", etc.
+*   **Output**: Streams markdown-formatted code blocks.
+
+---
+
+## 3. Database Schema (Convex)
+**File**: `convex/schema.ts`
+
+Two new tables were added to support the studio:
+
+### `uiFrames`
+Stores the actual generated designs.
+*   `frameId`: String (UUID) - Unique functionality identifier.
+*   `projectId`: ID - Links to the parent project.
+*   `designCode`: String - Large text field storing the HTML/Tailwind code.
+*   `userId`: ID - Creator.
+*   `frameName`: String.
+
+### `uiChats`
+Stores the chat history associated with a specific frame.
+*   `frameId`: String - Links to `uiFrames`.
+*   `role`: "user" | "assistant".
+*   `content`: String - Message text.
+*   `userId`: ID.
+
+---
+
+## Directory Structure Summary
+```
+src/app/(main)/dashboard/my-projects/[id]/workspace/ai-studio/
+└── ui-ux-studio/
+    └── web-generator/
+        └── page.tsx       <-- Main Client Component
+
+src/app/api/ui-studio/
+└── route.ts               <-- AI & Scraping Logic
+
+src/components/ai-elements/
+├── conversation.tsx       <-- Chat UI components
+├── message.tsx
+└── ... (various UI helpers)
+
+convex/
+└── schema.ts              <-- Database definition
+```

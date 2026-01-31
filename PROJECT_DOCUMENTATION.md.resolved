@@ -241,6 +241,40 @@
 // - by_repository: [repositoryId]
 ```
 
+#### 5. UI Frames Table (AI Studio)
+```typescript
+{
+  _id: Id<"uiFrames">,
+  projectId: Id<"projects">,
+  frameId: string,               // UUID for client-side routing
+  frameName: string,             // User-provided name for the frame
+  designCode: string,            // Large text field (HTML/Tailwind)
+  userId: Id<"users">,
+  createdAt: number,
+  updatedAt: number
+}
+
+// Indexes:
+// - by_project: [projectId]
+// - by_frame_id: [frameId]
+// - by_user: [userId]
+```
+
+#### 6. UI Chats Table (AI Studio)
+```typescript
+{
+  _id: Id<"uiChats">,
+  frameId: string,               // References uiFrames.frameId
+  role: "user" | "assistant",
+  content: string,
+  userId: Id<"users">,
+  createdAt: number
+}
+
+// Indexes:
+// - by_frame: [frameId]
+```
+
 ### Entity Relationship Diagram
 
 ```mermaid
@@ -355,6 +389,10 @@ src/
 │   │               └── workspace/
 │   │                   ├── layout.tsx
 │   │                   ├── page.tsx  # Project workspace/IDE
+│   │                   ├── ai-studio/ # AI Studio Workspace
+│   │                   │   └── ui-ux-studio/
+│   │                   │       └── web-generator/
+│   │                   │           └── page.tsx # Web Generator Studio
 │   │                   └── @sidebar/
 │   │                       └── default.tsx
 │   ├── actions/              # Server actions
@@ -692,6 +730,22 @@ indexRepo.createFunction(
 - `src/modules/dashboard/ImpactDisplay.tsx`
 - `src/modules/dashboard/ImpactScore.ts`
 
+### 10. AI Studio (UI/UX Studio)
+
+**Features**:
+- **Web Generator**: Create UI components with natural language
+- **Website Cloning**: Recreate websites from URLs (Scraping + Gemini Vision)
+- **Interactive Preview**: Real-time editing and hover inspection
+- **Export**: Download as React components or copy code
+
+**Key Files**:
+- `src/app/(main)/dashboard/my-projects/[id]/workspace/ai-studio/ui-ux-studio/web-generator/page.tsx`
+- `src/app/api/ui-studio/route.ts`
+
+**AI Provider**:
+- **Model**: `gemini-3-pro-preview`
+- **Capabilities**: Vision analysis, Code generation (Tailwind/Flowbite)
+
 ---
 
 ## API Endpoints
@@ -798,6 +852,8 @@ api.repos.connectRepository({
 ```
 
 #### POST /api/objects
+
+
 **Purpose**: S3 object management
 
 **Request**:
@@ -816,6 +872,23 @@ api.repos.connectRepository({
   "success": true
 }
 ```
+
+#### POST /api/ui-studio
+**Purpose**: AI Studio generation and scraping endpoint
+
+**Request**:
+```typescript
+{
+  action: "scrape" | "generate",
+  url?: string,                // For scrape action
+  messages?: Array<{           // For generate action
+    role: "user" | "assistant",
+    content: string
+  }>
+}
+```
+
+**Response**: Streaming text (code blocks or status updates)
 
 #### PUT /api/inngest
 **Purpose**: Inngest webhook handler for background jobs
