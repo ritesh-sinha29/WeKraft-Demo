@@ -18,6 +18,8 @@ import { DashboardBreadcrumbs } from "../../../modules/dashboard/SidebarBreadcru
 import { AppSidebar } from "../../../modules/dashboard/appSidebar";
 import { CommunitySearchBar } from "@/components/SearchBar";
 import HeaderProfile from "@/components/HeaderProfile";
+// 🟢 Voice Widget Import
+import { VoiceWidget } from "@/components/voice-os/VoiceWidget";
 
 export default function Layout({
   children,
@@ -70,7 +72,7 @@ export default function Layout({
         {/* {user && !user.hasCompletedOnboarding ? null : children} */}
         <SidebarProvider defaultOpen={true}>
           {/* <AppSidebar /> */}
-             {sidebar}
+              {sidebar}
           <SidebarInset>
             <header className="flex justify-between h-19 py-1 shrink-0 items-center border-b px-4">
               <div className="flex items-center gap-2">
@@ -86,6 +88,10 @@ export default function Layout({
               </div>
             </header>
             <main className="flex-1 overflow-auto">{children}</main>
+            
+            {/* 🟢 Voice Widget Added Here */}
+            <VoiceWidget />
+            
           </SidebarInset>
         </SidebarProvider>
       </Authenticated>

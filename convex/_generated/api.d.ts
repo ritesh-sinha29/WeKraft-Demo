@@ -10,8 +10,11 @@
 
 import type * as projects from "../projects.js";
 import type * as repos from "../repos.js";
+import type * as tasks from "../tasks.js";
 import type * as uiStudio from "../uiStudio.js";
 import type * as users from "../users.js";
+import type * as voice from "../voice.js";
+import type * as voiceStream from "../voiceStream.js";
 
 import type {
   ApiFromModules,
@@ -22,8 +25,11 @@ import type {
 declare const fullApi: ApiFromModules<{
   projects: typeof projects;
   repos: typeof repos;
+  tasks: typeof tasks;
   uiStudio: typeof uiStudio;
   users: typeof users;
+  voice: typeof voice;
+  voiceStream: typeof voiceStream;
 }>;
 
 /**
